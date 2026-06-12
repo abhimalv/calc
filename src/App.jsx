@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import './App.css'
 
 export default function App() {
@@ -7,6 +7,28 @@ export default function App() {
   const [operation, setOperation] = useState(null)
   const [waitingForNew, setWaitingForNew] = useState(false)
 
+  // Keyboard support
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if (e.key >= '0' && e.key <= '9') handleNumber(parseInt(e.key))
+      if (e.key === '.') handleDecimal()
+      if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') {
+        e.preventDefault()
+        handleOperation(e.key)
+      }
+      if (e.key === 'Enter' || e.key === '=') {
+        e.preventDefault()
+        handleEquals()
+      }
+      if (e.key === 'Backspace' || e.key.toLowerCase() === 'c') {
+        e.preventDefault()
+        handleClear()
+      }
+    }
+    window.addEventListener('keydown', handleKeyPress)
+    return () => window.removeEventListener('keydown', handleKeyPress)
+  }, [display, previousValue, operation, waitingForNew])
+
   const handleNumber = (num) => {
     if (waitingForNew) {
       setDisplay(String(num))
@@ -14,6 +36,7 @@ export default function App() {
     } else {
       setDisplay(display === '0' ? String(num) : display + num)
     }
+    playSound()
   }
 
   const handleDecimal = () => {
@@ -23,6 +46,7 @@ export default function App() {
     } else if (!display.includes('.')) {
       setDisplay(display + '.')
     }
+    playSound()
   }
 
   const handleOperation = (op) => {
@@ -34,10 +58,12 @@ export default function App() {
       const result = calculate(previousValue, currentValue, operation)
       setDisplay(String(result))
       setPreviousValue(result)
+      return
     }
 
     setOperation(op)
     setWaitingForNew(true)
+    playSound()
   }
 
   const calculate = (prev, current, op) => {
@@ -59,10 +85,12 @@ export default function App() {
     if (operation && previousValue !== null) {
       const currentValue = parseFloat(display)
       const result = calculate(previousValue, currentValue, operation)
-      setDisplay(String(result))
+      const formattedResult = Math.round(result * 100000000) / 100000000
+      setDisplay(String(formattedResult))
       setPreviousValue(null)
       setOperation(null)
       setWaitingForNew(true)
+      playSound()
     }
   }
 
@@ -71,6 +99,24 @@ export default function App() {
     setPreviousValue(null)
     setOperation(null)
     setWaitingForNew(false)
+    playSound()
+  }
+
+  const playSound = () => {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)()
+    const oscillator = audioContext.createOscillator()
+    const gain = audioContext.createGain()
+    
+    oscillator.connect(gain)
+    gain.connect(audioContext.destination)
+    
+    oscillator.frequency.value = 600
+    oscillator.type = 'sine'
+    gain.gain.setValueAtTime(0.1, audioContext.currentTime)
+    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1)
+    
+    oscillator.start(audioContext.currentTime)
+    oscillator.stop(audioContext.currentTime + 0.1)
   }
 
   return (
