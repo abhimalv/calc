@@ -4,17 +4,18 @@ A modern, interactive calculator built with React and Vite. Features a beautiful
 
 ## Features
 
-- ✨ Number input (0-9)
-- ➕ Basic arithmetic operations (+, -, *, /)
-- 🎨 Beautiful gradient UI with smooth animations
-- 📱 Responsive design
-- 🧮 Decimal point support
-- 🔄 Clear/Reset functionality
+ - 🎉 Confetti celebration on successful calculation
+ - 📜 Recent calculation history (toggleable)
+ - 🌗 Light/Dark theme toggle
 
 ## Installation
 
 ```bash
 npm install
+
+## CI / Deployment
+
+This repository includes a GitHub Actions workflow that builds the site and deploys the `dist` folder to GitHub Pages on pushes to `main`. The workflow file is at `.github/workflows/deploy.yml`.
 ```
 
 ## Development

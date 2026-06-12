@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import './App.css'
 
 export default function App() {
@@ -6,6 +6,10 @@ export default function App() {
   const [previousValue, setPreviousValue] = useState(null)
   const [operation, setOperation] = useState(null)
   const [waitingForNew, setWaitingForNew] = useState(false)
+  const [history, setHistory] = useState([])
+  const [showHistory, setShowHistory] = useState(false)
+  const [theme, setTheme] = useState('light')
+  const confettiRef = useRef(null)
 
   // Keyboard support
   useEffect(() => {
@@ -91,6 +95,8 @@ export default function App() {
       setOperation(null)
       setWaitingForNew(true)
       playSound()
+      addToHistory(`${previousValue} ${operation} ${currentValue} = ${formattedResult}`)
+      launchConfetti()
     }
   }
 
@@ -119,9 +125,66 @@ export default function App() {
     oscillator.stop(audioContext.currentTime + 0.1)
   }
 
+  const addToHistory = (entry) => {
+    setHistory((h) => [entry, ...h].slice(0, 10))
+  }
+
+  const toggleHistory = () => setShowHistory((s) => !s)
+
+  const toggleTheme = () => setTheme((t) => (t === 'light' ? 'dark' : 'light'))
+
+  const launchConfetti = () => {
+    const canvas = confettiRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    const particles = []
+    const colors = ['#ff6b6b', '#51cf66', '#ffd43b', '#748ffc', '#ff8fab']
+    const w = (canvas.width = canvas.clientWidth)
+    const h = (canvas.height = canvas.clientHeight)
+    for (let i = 0; i < 80; i++) {
+      particles.push({
+        x: Math.random() * w,
+        y: Math.random() * h - h / 2,
+        vx: (Math.random() - 0.5) * 6,
+        vy: Math.random() * 6 + 2,
+        size: Math.random() * 6 + 4,
+        color: colors[(i + Math.floor(Math.random() * colors.length)) % colors.length],
+        rot: Math.random() * Math.PI
+      })
+    }
+
+    let running = true
+    const start = performance.now()
+    const draw = (t) => {
+      if (!running) return
+      ctx.clearRect(0, 0, w, h)
+      particles.forEach((p) => {
+        p.x += p.vx
+        p.y += p.vy
+        p.vy += 0.15
+        p.rot += 0.1
+        ctx.save()
+        ctx.translate(p.x, p.y)
+        ctx.rotate(p.rot)
+        ctx.fillStyle = p.color
+        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size)
+        ctx.restore()
+      })
+      if (performance.now() - start > 1400) running = false
+      if (running) requestAnimationFrame(draw)
+      else ctx.clearRect(0, 0, w, h)
+    }
+    requestAnimationFrame(draw)
+  }
+
   return (
-    <div className="calculator">
+    <div className={`calculator ${theme}`}>
+      <canvas ref={confettiRef} className="confetti-canvas" />
       <div className="calculator-box">
+        <div className="topbar">
+          <button className="ghost" onClick={toggleHistory}>{showHistory ? 'Hide' : 'History'}</button>
+          <button className="ghost" onClick={toggleTheme}>{theme === 'light' ? 'Dark' : 'Light'}</button>
+        </div>
         <div className="display">{display}</div>
         <div className="buttons">
           <button className="clear" onClick={handleClear}>
@@ -185,6 +248,17 @@ export default function App() {
           </button>
         </div>
       </div>
+      {showHistory && (
+        <aside className="history-panel">
+          <h4>History</h4>
+          <ul>
+            {history.length === 0 && <li className="muted">No recent calculations</li>}
+            {history.map((h, i) => (
+              <li key={i}>{h}</li>
+            ))}
+          </ul>
+        </aside>
+      )}
     </div>
   )
 }

@@ -167,3 +167,70 @@ button:active {
   background: linear-gradient(135deg, #40c057 0%, #2b8a4a 100%);
   box-shadow: 0 12px 35px rgba(81, 207, 102, 0.5);
 }
+
+/* Topbar and ghost buttons */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.ghost {
+  background: transparent;
+  border: 1px solid rgba(0,0,0,0.06);
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #333;
+  transition: all 0.25s ease;
+}
+
+.ghost:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+/* Confetti canvas */
+.confetti-canvas {
+  position: fixed;
+  pointer-events: none;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+}
+
+/* History panel */
+.history-panel {
+  position: absolute;
+  right: calc(50% - 170px);
+  top: 20px;
+  width: 300px;
+  max-height: 60vh;
+  overflow: auto;
+  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(246,247,255,0.95));
+  border-radius: 14px;
+  padding: 12px 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+  border: 1px solid rgba(102,126,234,0.08);
+}
+
+.history-panel h4 {
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+  color: #334155;
+}
+
+.history-panel ul { list-style: none; }
+.history-panel li { padding: 6px 0; border-bottom: 1px dashed rgba(0,0,0,0.05); font-size: 0.9rem; }
+.history-panel li.muted { color: #6b7280; font-style: italic; }
+
+/* Theme: dark */
+.calculator.dark { background: linear-gradient(135deg, #0f172a 0%, #0b1220 60%, #10203a 100%); }
+.calculator.dark .calculator-box { background: linear-gradient(145deg, #0b1220 0%, #0f172a 100%); border: 1px solid rgba(255,255,255,0.04); }
+.calculator.dark .display { background: linear-gradient(135deg, #04050a 0%, #0b1220 100%); color: #7ef7c1; box-shadow: inset 0 4px 10px rgba(0,0,0,0.6); }
+.calculator.dark .ghost { color: #cbd5e1; border-color: rgba(255,255,255,0.06); }
+.calculator.dark .history-panel { background: linear-gradient(180deg, rgba(10,14,20,0.96), rgba(14,18,26,0.94)); color: #cbd5e1; border-color: rgba(120,130,255,0.04); }
+
