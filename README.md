@@ -52,3 +52,14 @@ npm preview
 4. Click the equals button (=) to calculate
 5. Click AC to clear and start over
 6. Use the decimal button (.) for decimal numbers
+
+## Persistence & Automation
+
+- The app persists your recent calculation history and theme choice in `localStorage`.
+- A convenient `deploy.sh` script is included to pull, install, build and restart `pm2` on a server. Run it on your server:
+
+```bash
+./deploy.sh
+```
+
+Make sure the script is executable (`chmod +x deploy.sh`) and your server has `pm2` installed if you rely on it.

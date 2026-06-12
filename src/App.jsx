@@ -11,6 +11,38 @@ export default function App() {
   const [theme, setTheme] = useState('light')
   const confettiRef = useRef(null)
 
+  // Load persisted settings
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('calc:history')
+      if (saved) setHistory(JSON.parse(saved))
+    } catch (e) {
+      /* ignore */
+    }
+    try {
+      const savedTheme = localStorage.getItem('calc:theme')
+      if (savedTheme) setTheme(savedTheme)
+      else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        setTheme('dark')
+      }
+    } catch (e) {
+      /* ignore */
+    }
+  }, [])
+
+  // Persist history and theme
+  useEffect(() => {
+    try {
+      localStorage.setItem('calc:history', JSON.stringify(history))
+    } catch (e) {}
+  }, [history])
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('calc:theme', theme)
+    } catch (e) {}
+  }, [theme])
+
   // Keyboard support
   useEffect(() => {
     const handleKeyPress = (e) => {
